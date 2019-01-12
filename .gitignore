@@ -1,1 +1,5 @@
+#java .class files
 *.class
+
+#sqlite database directory
+data/
