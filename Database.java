@@ -11,12 +11,17 @@ class Database {
     Connection mConnection;
     Statement mStatement;
 
-    Database() throws IOException, SQLException {
+    Database(String databaseName, Boolean dropTable) throws IOException, SQLException {
         Files.createDirectories(Paths.get("data"));
         
-        mConnection = DriverManager.getConnection("jdbc:sqlite:data/tracker_server.db");
+        mConnection = DriverManager.getConnection("jdbc:sqlite:data/" + databaseName);
 
         mStatement = mConnection.createStatement();
+
+        if (dropTable) {
+            mStatement.executeUpdate("DROP TABLE IF EXISTS location_update");
+        }
+
         mStatement.executeUpdate("CREATE TABLE IF NOT EXISTS location_update (tracker_id TEXT, timestamp TEXT, latitude REAL, longitude REAL)");
     }
 
@@ -42,6 +47,7 @@ class Database {
 }
 
 class LocationUpdate {
+    int mRowId;
     String mTrackerId;
     String mTimestamp;
     double mLatitude;
