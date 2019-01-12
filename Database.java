@@ -47,7 +47,6 @@ class Database {
 }
 
 class LocationUpdate {
-    int mRowId;
     String mTrackerId;
     String mTimestamp;
     double mLatitude;
