@@ -1,3 +1,0 @@
-#!/bin/bash
-
-javac -cp ".:deps/*" Database.java DatabaseTest.java
