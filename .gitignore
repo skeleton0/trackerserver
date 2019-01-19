@@ -1,5 +1,5 @@
-#java .class files
-*.class
+# Ignore Gradle project-specific cache directory
+.gradle
 
-#sqlite database directory
-data/
+# Ignore Gradle build output directory
+build
