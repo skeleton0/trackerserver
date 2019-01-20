@@ -4,7 +4,7 @@
 # Ignore Gradle build output directory
 build
 
-# Ignore IntelliJ IDEA build output directory
+# Ignore IntelliJ IDEA build output directory (shouldn't be generated anyway since we delegate tasks to gradle)
 out
 
 # Ignore IntelliJ IDEA generated files
