@@ -9,6 +9,7 @@ class App {
             net.start();
 
             Thread.sleep(60000);
+            net.stop();
         } catch (Exception e) {
             System.err.print("Caught exception: ");
             System.err.println(e.getMessage());
