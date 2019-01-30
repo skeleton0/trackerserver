@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.IOException;
+import java.text.ParseException;
 
 class Database {
     Connection mConnection;
@@ -59,5 +60,19 @@ class LocationUpdate {
         mTimestamp = timestamp;
         mLatitude = latitude;
         mLongitude = longitude;
+    }
+
+    static LocationUpdate fromString(String s) throws ParseException {
+        if (s == null) throw new ParseException("Input string is null.", 0);
+
+        String[] fields = s.split(",");
+
+        if (fields.length != 6) throw new ParseException("Found " + fields.length + " comma separated fields. 6 are required.", 0);
+
+        try {
+            return new LocationUpdate(fields[0], fields[1], Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
+        } catch (NumberFormatException e) {
+            throw new ParseException("Geodetic coordinates failed to parse to Double", 0);
+        }
     }
 }
