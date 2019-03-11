@@ -13,6 +13,7 @@ class App {
             database = new Database("tracker_server.db", false);
 
             network = new Network(46000);
+            network.makeSecure(network.makeSSLSocketFactory("/keystore.jks", "4bZteOGV7P0LEIBfnsN5".toCharArray()), null);
             network.start();
         } catch (Exception e) {
             System.err.print("Caught exception during initialisation of database and network: ");
