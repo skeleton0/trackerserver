@@ -19,25 +19,31 @@ class Network extends NanoHTTPD {
     public Response serve(IHTTPSession session) {
         LOG.info("Received connection from " + session.getRemoteHostName() + " (" + session.getRemoteIpAddress() + ")");
 
-        Map<String, String> files = new HashMap<String, String>();
+        if (session.getMethod() == Method.POST) {
+            Map<String, String> files = new HashMap<String, String>();
 
-        try {
-            session.parseBody(files);
-        } catch (Exception e) {
-            System.err.println("parseBody threw an Exception.");
-            System.err.println(e.getMessage());
-        }
+            try {
+                session.parseBody(files);
+            } catch (Exception e) {
+                System.err.println("parseBody threw an Exception.");
+                System.err.println(e.getMessage());
+            }
 
-        String value = files.get("postData");
-        if (value != null) {
-            while (true) {
-                try {
-                    mTrackerUpdates.put(value);
-                    break;
-                } catch (InterruptedException e) {
-                    System.err.println(e.getMessage());
+            String value = files.get("postData");
+            if (value != null) {
+                while (true) {
+                    try {
+                        mTrackerUpdates.put(value);
+                        break;
+                    } catch (InterruptedException e) {
+                        System.err.println(e.getMessage());
+                    }
                 }
             }
+        } else if (session.getMethod() == Method.GET) {
+            LOG.info("Got GET request for URI: " + session.getUri());
+
+            return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/plain", "Hello, World!");
         }
 
         return super.serve(session);
