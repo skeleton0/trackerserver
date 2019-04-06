@@ -4,58 +4,38 @@ import fi.iki.elonen.NanoHTTPD;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
-class Network extends NanoHTTPD {
-    private static final Logger LOG = Logger.getLogger(Network.class.getName());
-    private final ArrayBlockingQueue<String> mTrackerUpdates = new ArrayBlockingQueue<String>(10);
+class TrackerHttpServer extends NanoHTTPD {
+    private static final Logger LOG = Logger.getLogger(TrackerHttpServer.class.getName());
+    private Database mDb;
 
-    Network(int port) {
+    TrackerHttpServer(int port, Database db) {
         super(port);
+
+        mDb = db;
     }
 
     @Override
     public Response serve(IHTTPSession session) {
         LOG.info("Received connection from " + session.getRemoteHostName() + " (" + session.getRemoteIpAddress() + ")");
 
-        if (session.getMethod() == Method.POST) {
+        Response badRequest = newFixedLengthResponse(Response.Status.BAD_REQUEST, null, null);
+
+        if (session.getMethod() != Method.POST) {
+            return badRequest;
+        }
+
+        try {
             Map<String, String> files = new HashMap<String, String>();
-
-            try {
-                session.parseBody(files);
-            } catch (Exception e) {
-                System.err.println("parseBody threw an Exception.");
-                System.err.println(e.getMessage());
-            }
-
-            String value = files.get("postData");
-            if (value != null) {
-                while (true) {
-                    try {
-                        mTrackerUpdates.put(value);
-                        break;
-                    } catch (InterruptedException e) {
-                        System.err.println(e.getMessage());
-                    }
-                }
-            }
-        } else if (session.getMethod() == Method.GET) {
-            LOG.info("Got GET request for URI: " + session.getUri());
-
-            return newFixedLengthResponse(NanoHTTPD.Response.Status.OK, "text/plain", "Hello, World!");
+            session.parseBody(files);
+            Database.LocationUpdate updateData = Database.LocationUpdate.fromString(files.get("postData"));
+            mDb.insertLocationUpdate(updateData);
+        } catch (Exception e) {
+            LOG.warning("Parsing post data threw exception: " + e.getMessage());
+            return badRequest;
         }
 
-        return super.serve(session);
-    }
-
-    String takeNextUpdate() {
-        while (true) {
-            try {
-                return mTrackerUpdates.take();
-            } catch (InterruptedException e) {
-                System.err.println(e.getMessage());
-            }
-        }
+        return newFixedLengthResponse(Response.Status.OK, null, null);
     }
 }
