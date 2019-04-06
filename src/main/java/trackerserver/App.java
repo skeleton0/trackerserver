@@ -1,36 +1,25 @@
 package trackerserver;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 class App {
     private static final Logger LOG = Logger.getLogger(App.class.getSimpleName());
 
     public static void main(String[] args) {
-        Database database = null;
-        Network network = null;
+        LOG.info("Starting up...");
+
+        CountDownLatch shutdownLatch = new CountDownLatch(1);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(shutdownLatch::countDown));
 
         try {
-            database = new Database("tracker_server.db", false);
-
-            network = new Network(46000);
-            network.makeSecure(network.makeSSLSocketFactory("/keystore.jks", "4bZteOGV7P0LEIBfnsN5".toCharArray()), null);
-            network.start();
-        } catch (Exception e) {
-            System.err.print("Caught exception during initialisation of database and network: ");
-            System.err.println(e.getMessage());
+            shutdownLatch.await();
+        } catch (InterruptedException e) {
+            LOG.info("Was interrupted while waiting on shutdown latch.");
+            LOG.info("Received the following excuse for interruption: " + e.getMessage());
         }
 
-        while (true) {
-            String update = network.takeNextUpdate();
-
-            LOG.info("Received update: " + update);
-            LOG.info("Parsing update to LocationUpdate...");
-
-            try {
-                database.insertLocationUpdate(LocationUpdate.fromString(update));
-            } catch (Exception e) {
-                LOG.warning(e.getMessage());
-            }
-        }
+        LOG.info("Shutting down...");
     }
 }
