@@ -30,9 +30,9 @@ class Database {
 
     void insertLocationUpdate(LocationUpdate update) throws SQLException {
         mStatement.executeUpdate("INSERT INTO location_update VALUES ('" + update.mTrackerId + "', '" +
-                                                                           update.mTimestamp + "', " + 
-                                                                           update.mLatitude + ", " +
-                                                                           update.mLongitude + ")");
+                                                                              update.mTimestamp + "', " +
+                                                                              update.mLatitude + ", " +
+                                                                              update.mLongitude + ")");
     }
 
     LocationUpdate getLatestLocationForTracker(String trackerId) throws SQLException {
@@ -47,32 +47,32 @@ class Database {
 
         return location;
     }
-}
 
-class LocationUpdate {
-    String mTrackerId;
-    String mTimestamp;
-    double mLatitude;
-    double mLongitude;
+    static class LocationUpdate {
+        String mTrackerId;
+        String mTimestamp;
+        double mLatitude;
+        double mLongitude;
 
-    LocationUpdate(String trackerId, String timestamp, double latitude, double longitude) {
-        mTrackerId = trackerId;
-        mTimestamp = timestamp;
-        mLatitude = latitude;
-        mLongitude = longitude;
-    }
+        LocationUpdate(String trackerId, String timestamp, double latitude, double longitude) {
+            mTrackerId = trackerId;
+            mTimestamp = timestamp;
+            mLatitude = latitude;
+            mLongitude = longitude;
+        }
 
-    static LocationUpdate fromString(String s) throws ParseException {
-        if (s == null) throw new ParseException("Input string is null.", 0);
+        static LocationUpdate fromString(String s) throws ParseException {
+            if (s == null) throw new ParseException("Input string is null.", 0);
 
-        String[] fields = s.split(",");
+            String[] fields = s.split(",");
 
-        if (fields.length != 6) throw new ParseException("Found " + fields.length + " comma separated fields. 6 are required.", 0);
+            if (fields.length != 6) throw new ParseException("Found " + fields.length + " comma separated fields. 6 are required.", 0);
 
-        try {
-            return new LocationUpdate(fields[0], fields[1], Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
-        } catch (NumberFormatException e) {
-            throw new ParseException("Geodetic coordinates failed to parse to Double", 0);
+            try {
+                return new LocationUpdate(fields[0], fields[1], Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
+            } catch (NumberFormatException e) {
+                throw new ParseException("Geodetic coordinates failed to parse to Double", 0);
+            }
         }
     }
 }
