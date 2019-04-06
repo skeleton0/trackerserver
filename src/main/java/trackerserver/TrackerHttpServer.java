@@ -23,6 +23,7 @@ class TrackerHttpServer extends NanoHTTPD {
         Response badRequest = newFixedLengthResponse(Response.Status.BAD_REQUEST, null, null);
 
         if (session.getMethod() != Method.POST) {
+            LOG.warning("Received HTTP method other than POST.");
             return badRequest;
         }
 
