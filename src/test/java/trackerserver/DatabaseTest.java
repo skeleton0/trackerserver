@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import java.sql.SQLException;
 import java.io.IOException;
+import static trackerserver.Database.LocationUpdate;
 
 public class DatabaseTest {
     static Database mDatabase;
