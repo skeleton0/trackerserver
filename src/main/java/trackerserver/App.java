@@ -21,9 +21,9 @@ class App {
             trackerServer.makeSecure(trackerServer.makeSSLSocketFactory("/keystore.jks", "4bZteOGV7P0LEIBfnsN5".toCharArray()), null);
             trackerServer.start();
 
-            clientServer = new ClientHttpServer(46001, db);
+            clientServer = new ClientHttpServer(47000, db);
             clientServer.makeSecure(trackerServer.makeSSLSocketFactory("/keystore.jks", "4bZteOGV7P0LEIBfnsN5".toCharArray()), null);
-            trackerServer.start();
+            clientServer.start();
         } catch (Exception e) {
             LOG.info("Caught exception during initialisation: " + e.getMessage());
             shutdownLatch.countDown();
