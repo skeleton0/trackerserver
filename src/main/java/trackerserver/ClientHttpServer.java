@@ -1,7 +1,9 @@
 package trackerserver;
 
 import fi.iki.elonen.NanoHTTPD;
+import jdk.nashorn.internal.parser.JSONParser;
 
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 class ClientHttpServer extends NanoHTTPD {
@@ -21,6 +23,26 @@ class ClientHttpServer extends NanoHTTPD {
         String trackerId = session.getUri().replace("/", "");
         LOG.info("Received position request for tracker ID " + trackerId);
 
-        return newFixedLengthResponse(Response.Status.NOT_IMPLEMENTED, "text/plain", "go away bls");
+        Database.LocationUpdate latestUpdate = null;
+
+        try {
+            latestUpdate = mDatabase.getLatestLocationForTracker(trackerId);
+        } catch (SQLException e) {
+            LOG.warning("Caught SQL exception: " + e.getMessage());
+        }
+
+        if (latestUpdate != null) {
+            String jsonResponse = new StringBuilder().append("{\"t\":\"")
+                                                     .append(latestUpdate.mTimestamp)
+                                                     .append("\",\"la\":")
+                                                     .append(latestUpdate.mLatitude)
+                                                     .append(",\"lo\":")
+                                                     .append(latestUpdate.mLongitude)
+                                                     .append("}").toString();
+
+            return newFixedLengthResponse(Response.Status.OK, "application/json", jsonResponse);
+        }
+
+        return newFixedLengthResponse(Response.Status.NOT_FOUND, null, null);
     }
 }
