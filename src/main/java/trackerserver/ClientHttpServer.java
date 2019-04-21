@@ -2,8 +2,6 @@ package trackerserver;
 
 import fi.iki.elonen.NanoHTTPD;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 class ClientHttpServer extends NanoHTTPD {
@@ -20,14 +18,8 @@ class ClientHttpServer extends NanoHTTPD {
     public Response serve(IHTTPSession session) {
         LOG.info("Received request from " + session.getRemoteIpAddress());
 
-        try {
-            URI requestURI = new URI(session.getUri());
-            String trackerId = requestURI.getPath();
-
-            LOG.info("Received position request for tracker ID " + trackerId);
-        } catch (URISyntaxException e) {
-            LOG.warning("Failed to parse URI: " + e.getMessage());
-        }
+        String trackerId = session.getUri().replace("/", "");
+        LOG.info("Received position request for tracker ID " + trackerId);
 
         return newFixedLengthResponse(Response.Status.NOT_IMPLEMENTED, "text/plain", "go away bls");
     }
