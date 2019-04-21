@@ -20,7 +20,7 @@ class TrackerHttpServer extends NanoHTTPD {
     public Response serve(IHTTPSession session) {
         LOG.info("Received connection from " + session.getRemoteHostName() + " (" + session.getRemoteIpAddress() + ")");
 
-        Response badRequest = newFixedLengthResponse(Response.Status.BAD_REQUEST, null, null);
+        Response badRequest = newFixedLengthResponse(Response.Status.BAD_REQUEST, "text/plain", "\0");
 
         if (session.getMethod() != Method.POST) {
             LOG.warning("Received HTTP method other than POST.");
@@ -37,6 +37,6 @@ class TrackerHttpServer extends NanoHTTPD {
             return badRequest;
         }
 
-        return newFixedLengthResponse(Response.Status.OK, null, null);
+        return newFixedLengthResponse(Response.Status.OK, "text/plain", "\0");
     }
 }
