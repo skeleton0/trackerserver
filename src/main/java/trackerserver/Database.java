@@ -67,9 +67,24 @@ class Database {
             String[] fields = s.split(",");
 
             if (fields.length != 6) throw new ParseException("Found " + fields.length + " comma separated fields. 6 are required.", 0);
+            if (!fields[1].matches("\\d{14}\\.0{3}")) throw new ParseException("Unexpected timestamp format.", 0);
+
+            //convert timestamp field to ISO8601
+            String formattedTimestamp = fields[1].substring(0, 4) +
+                               "-" +
+                               fields[1].substring(4, 6) +
+                               "-" +
+                               fields[1].substring(6, 8) +
+                               "T" +
+                               fields[1].substring(8, 10) +
+                               ":" +
+                               fields[1].substring(10, 12) +
+                               ":" +
+                               fields[1].substring(12, 14) +
+                               "Z";
 
             try {
-                return new LocationUpdate(fields[0], fields[1], Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
+                return new LocationUpdate(fields[0], formattedTimestamp, Double.parseDouble(fields[2]), Double.parseDouble(fields[3]));
             } catch (NumberFormatException e) {
                 throw new ParseException("Geodetic coordinates failed to parse to Double", 0);
             }
