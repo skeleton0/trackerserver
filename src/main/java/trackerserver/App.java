@@ -18,11 +18,11 @@ class App {
             db = new Database("tracker_server.db", false);
 
             trackerServer = new TrackerHttpServer(46000, db);
-            trackerServer.makeSecure(trackerServer.makeSSLSocketFactory("/keystore.jks", "4bZteOGV7P0LEIBfnsN5".toCharArray()), null);
+            trackerServer.makeSecure(trackerServer.makeSSLSocketFactory("/keystore.jks", "".toCharArray()), null);
             trackerServer.start();
 
             clientServer = new ClientHttpServer(47000, db);
-            clientServer.makeSecure(trackerServer.makeSSLSocketFactory("/keystore.jks", "4bZteOGV7P0LEIBfnsN5".toCharArray()), null);
+            clientServer.makeSecure(trackerServer.makeSSLSocketFactory("/keystore.jks", "".toCharArray()), null);
             clientServer.start();
         } catch (Exception e) {
             LOG.info("Caught exception during initialisation: " + e.getMessage());
